@@ -35,13 +35,12 @@ const cardTypes = ["003", "006", "009", "133", "149", "150"];
 const totalTypes = cardTypes.length;
 
 const usedTypes = [];
+let flippedCards = [];
 
 for (let i = 0; i < numOfCards; i++) {
   const card = document.createElement("div");
   card.classList.add("card");
-
   let type = null;
-
   do {
     // Randomly select a data type from the cardTypes array
     const typeIndex = Math.floor(Math.random() * totalTypes);
@@ -56,8 +55,40 @@ for (let i = 0; i < numOfCards; i++) {
 
   // Assign the data type as a custom data attribute on the card
   card.setAttribute("data-type", type);
-  card.style.backgroundImage = `url(./images/${type}.png)`;
-  board.appendChild(card);
-}
 
-let card1;
+  const front = document.createElement("div");
+  front.classList.add("card-front");
+  front.style.backgroundImage = `url(./images/${type}.png)`;
+  const back = document.createElement("div");
+  back.classList.add("card-back");
+  back.style.backgroundImage = "url(./images/cardback.jpg";
+  card.appendChild(front);
+  card.appendChild(back);
+  board.appendChild(card);
+
+  card.addEventListener("click", () => {
+    if (flippedCards.length < 2 && !card.classList.contains("flipped")) {
+      card.classList.add("flipped");
+      flippedCards.push(card);
+
+      if (flippedCards.length === 2) {
+        const [card1, card2] = flippedCards;
+        const type1 = card1.getAttribute("data-type");
+        const type2 = card2.getAttribute("data-type");
+
+        if (type1 === type2) {
+          flippedCards = [];
+        } else {
+          setTimeout(() => {
+            card1.classList.remove("flipped");
+            card2.classList.remove("flipped");
+            flippedCards = [];
+          }, 2000);
+        }
+      }
+    }
+    if (document.querySelectorAll(".card.flipped").length === numOfCards) {
+      alert("You win!");
+    }
+  });
+}
