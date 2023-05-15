@@ -2,31 +2,33 @@ const themeToggle = document.getElementById("theme-toggle");
 const currentIconSun = document.querySelector(".current-icon-sun");
 const currentIconMoon = document.querySelector(".current-icon-moon");
 
-let currentTheme = localStorage.getItem("theme") || "light";
-let isDark = currentTheme === "dark";
-
-// Check user's OS theme preference and set the initial theme accordingly
-if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-  currentTheme = "dark";
-} else if (window.matchMedia("(prefers-color-scheme: light)").matches) {
-  currentTheme = "light";
+function setTheme(theme) {
+  let isDark = theme === "dark";
+  document.documentElement.setAttribute("data-theme", theme);
+  currentIconSun.style.display = isDark ? "none" : "block";
+  currentIconMoon.style.display = isDark ? "block" : "none";
+  themeToggle.checked = isDark;
 }
 
-isDark = currentTheme === "dark";
-
-document.documentElement.setAttribute("data-theme", currentTheme);
-currentIconSun.style.display = isDark ? "none" : "block";
-currentIconMoon.style.display = isDark ? "block" : "none";
-themeToggle.checked = isDark;
-
-themeToggle.addEventListener("input", (e) => {
+function toggleTheme(e) {
   const isChecked = e.target.checked;
-  currentTheme = isChecked ? "dark" : "light";
-  localStorage.setItem("theme", currentTheme);
-  document.documentElement.setAttribute("data-theme", currentTheme);
-  currentIconSun.style.display = isChecked ? "none" : "block";
-  currentIconMoon.style.display = isChecked ? "block" : "none";
-});
+  const theme = isChecked ? "dark" : "light";
+  localStorage.setItem("theme", theme);
+  setTheme(theme);
+}
+
+let currentTheme = localStorage.getItem("theme");
+if (currentTheme === null) {
+  if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+    currentTheme = "dark";
+  } else {
+    currentTheme = "light";
+  }
+}
+
+setTheme(currentTheme);
+
+themeToggle.addEventListener("input", toggleTheme);
 
 const board = document.getElementById("board");
 const moveCounter = document.getElementById("moves-counter");
@@ -41,12 +43,14 @@ updateMovesCounter();
 
 // Shuffle the card types array
 shuffleArray(cardTypes);
+addCardsToBoard();
 
-// Create and add cards to the board
-for (let i = 0; i < numOfCards; i++) {
-  const type = cardTypes[i % cardTypes.length];
-  const card = createCard(type);
-  board.appendChild(card);
+function addCardsToBoard() {
+  for (let i = 0; i < numOfCards; i++) {
+    const type = cardTypes[i % cardTypes.length];
+    const card = createCard(type);
+    board.appendChild(card);
+  }
 }
 
 function createCard(type) {
@@ -106,8 +110,101 @@ function updateMovesCounter() {
   moveCounter.textContent = totalMoves;
 }
 
+function getBestMoves() {
+  const bestMoves = localStorage.getItem("bestMoves");
+  return bestMoves !== null ? parseInt(bestMoves) : Infinity;
+}
+
+function updateBestMoves(moves) {
+  const bestMoves = getBestMoves();
+  if (moves < bestMoves) {
+    localStorage.setItem("bestMoves", moves);
+    return true;
+  }
+  return false;
+}
+
+function resetGame() {
+  hideModal();
+  // Remove all cards from the board
+  while (board.firstChild) {
+    board.removeChild(board.firstChild);
+  }
+
+  // Reset game variables
+  flippedCards.length = 0;
+  totalMoves = 0;
+  updateMovesCounter();
+
+  // Add new cards to the board
+  addCardsToBoard();
+}
+
 function checkWin() {
   if (document.querySelectorAll(".card.flipped").length === numOfCards) {
-    alert("You win!");
+    showModal();
   }
+}
+
+function showModal() {
+  // Get the current total moves and best moves from localStorage
+  const currentMoves = totalMoves;
+  const bestMoves = localStorage.getItem("bestMoves") || "--";
+
+  // Check if the current total moves is better than the previous best moves
+  let isNewBest = false;
+  if (bestMoves === "--" || currentMoves < bestMoves) {
+    localStorage.setItem("bestMoves", currentMoves);
+    isNewBest = true;
+  }
+
+  // Create the modal content
+  const modalContent = document.createElement("div");
+  modalContent.classList.add("modal-content");
+
+  const header = document.createElement("h2");
+  header.textContent = "Congratulations!";
+  modalContent.appendChild(header);
+
+  const message = document.createElement("p");
+  message.textContent = `You completed the game in ${currentMoves} turns!`;
+  modalContent.appendChild(message);
+
+  const bestScoreMessage = document.createElement("p");
+  bestScoreMessage.textContent = `Your best score is ${bestMoves} turns.`;
+  modalContent.appendChild(bestScoreMessage);
+
+  if (isNewBest) {
+    const newBestScoreMessage = document.createElement("p");
+    newBestScoreMessage.textContent = "Congratulations on your new best score!";
+    modalContent.appendChild(newBestScoreMessage);
+  }
+
+  const buttonContainer = document.createElement("div");
+  buttonContainer.classList.add("button-container");
+
+  const resetButton = document.createElement("button");
+  resetButton.textContent = "Reset";
+  resetButton.addEventListener("click", resetGame);
+  buttonContainer.appendChild(resetButton);
+
+  const closeButton = document.createElement("button");
+  closeButton.textContent = "Close";
+  closeButton.addEventListener("click", hideModal);
+  buttonContainer.appendChild(closeButton);
+
+  modalContent.appendChild(buttonContainer);
+
+  // Create the modal container and add the content to it
+  const modal = document.createElement("div");
+  modal.classList.add("modal");
+  modal.appendChild(modalContent);
+
+  // Add the modal to the page
+  document.body.appendChild(modal);
+}
+
+function hideModal() {
+  const modal = document.querySelector(".modal");
+  modal.style.display = "none";
 }
