@@ -1,0 +1,29 @@
+# Node.js dependencies
+node_modules/
+
+# Vite cache
+.cache/
+
+# Compiled files
+dist/
+
+# macOS folder settings
+.DS_Store
+
+# Visual Studio Code settings
+.vscode/
+
+# JetBrains IDE settings
+.idea/
+.idea_modules/
+
+# ESLint cache
+.eslintcache
+
+# Log files
+.log/
+
+# Environment variables
+.env
+
+dist/

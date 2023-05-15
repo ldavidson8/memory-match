@@ -33,42 +33,36 @@ const moveCounter = document.getElementById("moves-counter");
 
 const numOfCards = 12;
 const cardTypes = ["003", "006", "009", "133", "149", "150"];
-const totalTypes = cardTypes.length;
 
-const usedTypes = [];
 let flippedCards = [];
 
 let totalMoves = 0;
-moveCounter.innerText = totalMoves;
+updateMovesCounter();
 
+// Shuffle the card types array
+shuffleArray(cardTypes);
+
+// Create and add cards to the board
 for (let i = 0; i < numOfCards; i++) {
+  const type = cardTypes[i % cardTypes.length];
+  const card = createCard(type);
+  board.appendChild(card);
+}
+
+function createCard(type) {
   const card = document.createElement("div");
   card.classList.add("card");
-  let type = null;
-  do {
-    // Randomly select a data type from the cardTypes array
-    const typeIndex = Math.floor(Math.random() * totalTypes);
-    type = cardTypes[typeIndex];
-  } while (
-    usedTypes.includes(type) &&
-    usedTypes.filter((x) => x === type).length >= 2
-  );
-
-  // Add the data type to the usedTypes array
-  usedTypes.push(type);
-
-  // Assign the data type as a custom data attribute on the card
   card.setAttribute("data-type", type);
 
   const front = document.createElement("div");
   front.classList.add("card-front");
-  front.style.backgroundImage = `url(./images/${type}.png)`;
+  front.style.backgroundImage = `url(${type}.png)`;
+
   const back = document.createElement("div");
   back.classList.add("card-back");
-  back.style.backgroundImage = "url(./images/cardback.jpg";
-  card.appendChild(front);
-  card.appendChild(back);
-  board.appendChild(card);
+  back.style.backgroundImage = "url(/cardback.jpg";
+
+  card.append(front, back);
 
   card.addEventListener("click", () => {
     if (flippedCards.length < 2 && !card.classList.contains("flipped")) {
@@ -83,10 +77,10 @@ for (let i = 0; i < numOfCards; i++) {
         if (type1 === type2) {
           flippedCards = [];
           totalMoves++;
-          moveCounter.textContent = totalMoves;
+          updateMovesCounter();
         } else {
           totalMoves++;
-          moveCounter.textContent = totalMoves;
+          updateMovesCounter();
           setTimeout(() => {
             card1.classList.remove("flipped");
             card2.classList.remove("flipped");
@@ -95,8 +89,25 @@ for (let i = 0; i < numOfCards; i++) {
         }
       }
     }
-    if (document.querySelectorAll(".card.flipped").length === numOfCards) {
-      alert("You win!");
-    }
+    checkWin();
   });
+
+  return card;
+}
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+function updateMovesCounter() {
+  moveCounter.textContent = totalMoves;
+}
+
+function checkWin() {
+  if (document.querySelectorAll(".card.flipped").length === numOfCards) {
+    alert("You win!");
+  }
 }
