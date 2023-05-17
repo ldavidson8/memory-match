@@ -1,7 +1,19 @@
+@custom-media --viewport-small (min-width: 540px);
+@custom-media --viewport-medium (min-width: 768px);
+@custom-media --viewport-large (min-width: 1024px);
+@custom-media --viewport-xlarge (min-width: 1400px);
+
 :root {
   --color-background-default: #eee;
   --color-text-default: #000;
+  --color-light-toggle: #ffb237;
+  --color-dark-toggle: #9a6aff;
+  --color-red-400: #df1b41;
+  --color-red-500: #fc526a;
   --card-shadow-default: rgba(0, 0, 0, 0.05);
+  --border-radius-small: 6px;
+  --border-radius-medium: 12px;
+  --border-radius-large: 40px;
 }
 
 html[data-theme="light"] {
@@ -11,9 +23,8 @@ html[data-theme="light"] {
 }
 
 html[data-theme="dark"] {
-  --color-background-default: #0d1117;
-  --color-text-default: #ffffff;
-  --card-shadow-default: rgba(197, 197, 197, 0.03);
+  --color-background-default: #17171c;
+  --color-text-default: #e2e2e9;
 }
 
 body {
@@ -26,9 +37,10 @@ body {
 
 .header {
   display: flex;
-  flex-grow: 1;
-  justify-content: space-around;
+  flex-wrap: wrap;
+  justify-content: space-between;
   align-items: center;
+  max-width: 80rem;
   margin: 0 auto 1.5rem;
   padding: 0.5rem 1rem;
 }
@@ -45,23 +57,43 @@ body {
 }
 
 .primary-heading {
+  font-size: 1.5rem;
+  flex-basis: 100%;
+  order: 3;
   margin: 0 auto;
+  text-align: center;
+}
+
+@media (--viewport-medium) {
+  .primary-heading {
+    font-size: 1.75rem;
+    order: 2;
+    flex-basis: auto;
+  }
 }
 
 .text-label {
+  order: 1;
   font-size: 1.25rem;
   font-weight: 500;
 }
 
 .theme-toggle-container {
+  order: 2;
   height: 32px;
   width: 56px;
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background-color: #424a53;
+  background-color: #3f3f48;
   border-radius: 24px;
+}
+
+@media (--viewport-medium) {
+  .theme-toggle-container {
+    order: 3;
+  }
 }
 
 #theme-toggle {
@@ -78,7 +110,7 @@ body {
 }
 
 .theme-toggle-button {
-  background-color: #27262c;
+  background-color: #1c1c20;
   position: absolute;
   left: 3px;
   top: 3px;
@@ -103,12 +135,12 @@ body {
 }
 
 .current-icon-sun {
-  fill: #ffb237;
+  fill: var(--color-light-toggle);
   display: none;
 }
 
 .current-icon-moon {
-  fill: #9a6aff;
+  fill: var(--color-dark-toggle);
   display: none;
 }
 
@@ -122,11 +154,37 @@ body {
 
 .board {
   align-self: center;
+  position: relative;
   display: grid;
-  grid-template-columns: repeat(4, minmax(200px, 1fr));
+  grid-template-columns: repeat(2, minmax(150px, 1fr));
   place-items: center;
-  column-gap: 1rem;
   row-gap: 1rem;
+}
+
+@media (--viewport-small) {
+  .board {
+    grid-template-columns: repeat(3, minmax(150px, 1fr));
+    row-gap: 2rem;
+  }
+}
+
+@media (--viewport-large) {
+  .board {
+    grid-template-columns: repeat(4, minmax(200px, 1fr));
+  }
+}
+
+@media (--viewport-xlarge) {
+  .board {
+    grid-template-columns: repeat(4, minmax(200px, 1fr));
+    column-gap: 1rem;
+  }
+}
+
+@media (min-height: 1000px) {
+  .board {
+    row-gap: 4rem;
+  }
 }
 
 .card {
@@ -142,6 +200,18 @@ body {
   background-position: center;
   background-repeat: no-repeat;
   transition: transform 1s;
+}
+
+@media (--viewport-large) {
+  .card {
+    height: 12rem;
+  }
+}
+
+@media (--viewport-xlarge) {
+  .card {
+    height: 14rem;
+  }
 }
 
 .card-front,
@@ -163,31 +233,28 @@ body {
   transform: rotateY(180deg);
 }
 
-@media (min-width: 1400px) {
-  .card {
-    height: 15rem;
-  }
-}
-
 /* Modal container */
-.modal {
+.modal::before {
+  content: "";
+  background: rgba(0, 0, 0, 0.6);
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
 }
 
 /* Modal content */
 .modal-content {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 999;
   background-color: var(--color-background-default);
   color: var(--color-text-default);
-  border-radius: 5px;
+  border-radius: var(--border-radius-medium);
   padding: 20px;
   max-width: 500px;
   width: 80%;
@@ -197,13 +264,13 @@ body {
 /* Modal header */
 .modal-content h2 {
   margin-top: 0;
-  font-size: 2rem;
+  font-size: 1.5rem;
 }
 
 /* Modal message */
 .modal-content p {
-  font-size: 1.2rem;
-  margin: 10px 0;
+  font-size: 1.1rem;
+  margin: 2rem 0;
 }
 
 /* Modal button container */
@@ -218,11 +285,21 @@ body {
   background-color: #fff;
   border: none;
   color: #000;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
+  font-weight: 500;
   cursor: pointer;
   padding: 10px 20px;
-  border-radius: 5px;
+  border-radius: var(--border-radius-small);
   margin: 0 10px;
+}
+
+.modal-content .close-btn {
+  background-color: var(--color-red-500);
+  color: #fff;
+}
+
+.modal-content .close-btn:hover {
+  background-color: var(--color-red-400);
 }
 
 /* Close button on hover */

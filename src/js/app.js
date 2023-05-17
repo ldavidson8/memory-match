@@ -147,14 +147,20 @@ function checkWin() {
 }
 
 function showModal() {
+  // Check if a modal already exists and remove it
+  const existingModal = document.querySelector(".modal");
+  if (existingModal) {
+    existingModal.remove();
+  }
   // Get the current total moves and best moves from localStorage
   const currentMoves = totalMoves;
-  const bestMoves = localStorage.getItem("bestMoves") || "--";
+  let bestMoves = localStorage.getItem("bestMoves");
 
-  // Check if the current total moves is better than the previous best moves
+  // Check if the user has never played before or if the current total moves is better than the previous best moves
   let isNewBest = false;
-  if (bestMoves === "--" || currentMoves < bestMoves) {
+  if (!bestMoves || currentMoves < bestMoves) {
     localStorage.setItem("bestMoves", currentMoves);
+    bestMoves = currentMoves;
     isNewBest = true;
   }
 
@@ -191,6 +197,7 @@ function showModal() {
   const closeButton = document.createElement("button");
   closeButton.textContent = "Close";
   closeButton.addEventListener("click", hideModal);
+  closeButton.classList.add("close-btn");
   buttonContainer.appendChild(closeButton);
 
   modalContent.appendChild(buttonContainer);
