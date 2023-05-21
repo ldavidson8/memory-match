@@ -53,6 +53,12 @@ function addCardsToBoard() {
   }
 }
 
+function removeCardsFromBoard() {
+  while (board.firstChild) {
+    board.removeChild(board.firstChild);
+  }
+}
+
 function createCard(type) {
   const card = document.createElement("div");
   card.classList.add("card");
@@ -126,10 +132,7 @@ function updateBestMoves(moves) {
 
 function resetGame() {
   hideModal();
-  // Remove all cards from the board
-  while (board.firstChild) {
-    board.removeChild(board.firstChild);
-  }
+  removeCardsFromBoard();
 
   // Reset game variables
   flippedCards.length = 0;
@@ -196,7 +199,12 @@ function showModal() {
 
   const closeButton = document.createElement("button");
   closeButton.textContent = "Close";
-  closeButton.addEventListener("click", hideModal);
+  closeButton.addEventListener("click", function () {
+    hideModal();
+    removeCardsFromBoard();
+    createBoardResetOverlay();
+  });
+
   closeButton.classList.add("close-btn");
   buttonContainer.appendChild(closeButton);
 
@@ -214,4 +222,21 @@ function showModal() {
 function hideModal() {
   const modal = document.querySelector(".modal");
   modal.style.display = "none";
+}
+
+function createBoardResetOverlay() {
+  const overlay = document.createElement("div");
+  overlay.classList.add("board-overlay");
+
+  const resetButton = document.createElement("button");
+  resetButton.addEventListener("click", resetGame);
+
+  // SVG string
+  const svgString =
+    '<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"><path d="M17.65 6.35A7.96 7.96 0 0 0 12 4a8 8 0 0 0-8 8 8 8 0 0 0 8 8 7.98 7.98 0 0 0 7.73-6h-2.08A6 6 0 0 1 12 18a6 6 0 0 1-6-6 6 6 0 0 1 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35Z"/></svg>';
+
+  resetButton.innerHTML = svgString;
+
+  overlay.appendChild(resetButton);
+  board.appendChild(overlay);
 }
