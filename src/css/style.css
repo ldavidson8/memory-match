@@ -43,6 +43,7 @@ body {
 .background_main {
   width: 100vw;
   min-height: 100vh;
+  max-width: 100%;
   position: absolute;
   top: 0;
   display: flex;

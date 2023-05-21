@@ -2,11 +2,17 @@ const themeToggle = document.getElementById("theme-toggle");
 const currentIconSun = document.querySelector(".current-icon-sun");
 const currentIconMoon = document.querySelector(".current-icon-moon");
 
+const board = document.getElementById("board");
+const moveCounter = document.getElementById("moves-counter");
+
+const numOfCards = 12;
+const cardTypes = ["003", "006", "009", "133", "149", "150"];
+
 function setTheme(theme) {
   let isDark = theme === "dark";
   document.documentElement.setAttribute("data-theme", theme);
-  currentIconSun.style.display = isDark ? "none" : "block";
-  currentIconMoon.style.display = isDark ? "block" : "none";
+  currentIconSun.style.display = isDark ? "none" : "block"; // Sun icon if light mode
+  currentIconMoon.style.display = isDark ? "block" : "none"; // Moon icon if dark mode
   themeToggle.checked = isDark;
 }
 
@@ -19,6 +25,7 @@ function toggleTheme(e) {
 
 let currentTheme = localStorage.getItem("theme");
 if (currentTheme === null) {
+  // Check user's preference if current theme has not been set
   if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
     currentTheme = "dark";
   } else {
@@ -29,12 +36,6 @@ if (currentTheme === null) {
 setTheme(currentTheme);
 
 themeToggle.addEventListener("input", toggleTheme);
-
-const board = document.getElementById("board");
-const moveCounter = document.getElementById("moves-counter");
-
-const numOfCards = 12;
-const cardTypes = ["003", "006", "009", "133", "149", "150"];
 
 let flippedCards = [];
 
@@ -144,6 +145,7 @@ function resetGame() {
 }
 
 function checkWin() {
+  // Check if all card elements have a flipped class equal to total cards
   if (document.querySelectorAll(".card.flipped").length === numOfCards) {
     showModal();
   }
@@ -210,12 +212,10 @@ function showModal() {
 
   modalContent.appendChild(buttonContainer);
 
-  // Create the modal container and add the content to it
   const modal = document.createElement("div");
   modal.classList.add("modal");
   modal.appendChild(modalContent);
 
-  // Add the modal to the page
   document.body.appendChild(modal);
 }
 
