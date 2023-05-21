@@ -316,9 +316,9 @@ body {
 
 /* Modal buttons */
 .modal-content button {
-  background-color: #fff;
+  background-color: var(--color-background-raised);
   border: none;
-  color: #000;
+  color: var(--color-text-default);
   font-size: 1.1rem;
   font-weight: 500;
   cursor: pointer;
