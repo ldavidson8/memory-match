@@ -71,7 +71,7 @@ function createCard(type) {
 
   const back = document.createElement("div");
   back.classList.add("card-back");
-  back.style.backgroundImage = "url(/cardback.jpg";
+  back.style.backgroundImage = `url(cardback.jpg)`;
 
   card.append(front, back);
 
